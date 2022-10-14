@@ -52,7 +52,7 @@ class Mail(models.Model):
     title = models.CharField(max_length=100, null=False)
     contents = models.CharField(max_length=100, null=True)
     send_time = models.DateTimeField(auto_now=False, auto_now_add=True, null=False)
-    sender_check = models.BooleanField(defalut=True, null=False)
+    sender_check = models.BooleanField(default=True, null=False)
     receiver_check = models.BooleanField(default=True, null=False)
 
 # 좋아요
@@ -83,7 +83,7 @@ class Refrigerator(models.Model):
 class Recipe_Ingredients(models.Model):
     name = models.ForeignKey(Ingredients, null=False, on_delete=models.CASCADE, db_column="name", related_name="Recipe_Ingredients")
     post_id = models.ForeignKey(RecipePost, null=False, on_delete=models.CASCADE, db_column="post_id", related_name="Recipe_Ingredients")
-    unit = models.ForeignKey(Units, null=False, on_delete=models.CASCADE, db_column="unit", related_name="Refrigerator")
+    unit = models.ForeignKey(Units, null=False, on_delete=models.CASCADE, db_column="unit", related_name="Recipe_Ingredients")
     amount = models.FloatField(null=False, default=0)
 
 # 신고
