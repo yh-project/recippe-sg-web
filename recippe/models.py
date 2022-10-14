@@ -85,3 +85,10 @@ class Recipe_Ingredients(models.Model):
     post_id = models.ForeignKey(RecipePost, null=False, on_delete=models.CASCADE, db_column="post_id", related_name="Recipe_Ingredients")
     unit = models.ForeignKey(Units, null=False, on_delete=models.CASCADE, db_column="unit", related_name="Recipe_Ingredients")
     amount = models.FloatField(null=False, default=0)
+
+# 신고
+class Report(models.Model):
+    nickname = models.ForeignKey(User, null=False, on_delete=models.CASCADE, db_column="reporter", related_name="report_user")
+    contents = models.CharField(max_length=300, null=True)
+    post_type = models.IntegerField(null=False)
+    post_id = models.IntegerField(null=False)
