@@ -92,3 +92,7 @@ class Report(models.Model):
     contents = models.CharField(max_length=300, null=True)
     post_type = models.IntegerField(null=False)
     post_id = models.IntegerField(null=False)
+
+class TempEmail(models.Model):
+    email = models.CharField(max_length=100, null=False)
+    code = models.IntegerField(null=True)
