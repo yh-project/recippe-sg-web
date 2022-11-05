@@ -45,22 +45,19 @@ class ControlEmailVerification_b():
         serializer = EmailVerificationSerializer(data=request.data)
         
         if serializer.is_valid():
-            print("hello")
+            serializer.save()
             return "이메일 등록 성공"
         else:
             return "이메일 등록 실패"
         
     def sendCode(self, email, code):
-        print(email)
         email_contents = EmailMessage(
             '인증 코드 전송',
             f"인증 코드는 {code}",
             to=[email],
         )
-        print(email_contents)
         res = email_contents.send()
-        #smtp = smtplib.SMTP('smtp.gmail.com', 587)
-
+        print(res)
 
         result = self.sendResult(res)
         return result
