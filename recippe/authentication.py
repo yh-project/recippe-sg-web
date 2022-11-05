@@ -8,15 +8,51 @@ from .serializers import *
 
 import random
 
-import smtplib
-from email.mime.text import MIMEText
+import os.path
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from googleapiclient import errors
+from email.message import EmailMessage
+import base64
+
+def gmail_authenticate():
+    SCOPES = ['https://mail.google.com/']
+    creds = None
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('./token.json', SCOPES)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file('./credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+    return build('gmail', 'v1', credentials=creds)
+
+def create_message(sender, to, subject, message_text):
+    message = EmailMessage()
+    message["From"] = sender
+    message["To"] = to.split(",")
+    message["Subject"] = subject
+    message.set_content(message_text)
+    return {'raw': base64.urlsafe_b64encode(message.as_bytes()).decode('utf8')}
+    
+def send_message(service, user_id, message):
+    try:
+        message = service.users().messages().send(userId=user_id, body=message).execute()
+        print('Message Id: %s' % message['id'])
+        return message
+    except errors.HttpError as error:
+        print('An error occurred: %s' % error)
 
 '''
 221105 로그인 class 추가
 221105 이메일인증 class 추가
 221105 로그아웃 class 추가
 '''
-
 
 class ControlLogin_b():
 
@@ -78,15 +114,12 @@ class ControlEmailVerification_b():
             return "이메일 등록 실패"
         
     def sendCode(self, email, code):
-        email_contents = EmailMessage(
-            '인증 코드 전송',
-            f"인증 코드는 {code}",
-            to=[email],
-        )
-        res = email_contents.send()
-        print(res)
-
-        result = self.sendResult(res)
+        service = gmail_authenticate()
+        message = create_message("레쉽피", email, "테스트", str(code))
+        result =  send_message(service, "recippesg@gmail.com", message)
+        if result is not None:
+            result = "이메일 전송 성공"
+        else: result = "이메일 전송 실패"
         return result
 
     def sendResult(self, result):
