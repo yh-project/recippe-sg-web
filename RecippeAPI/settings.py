@@ -138,3 +138,11 @@ CORS_ORIGIN_WHITELIST = ['http://192.168.200.125:8080',
                          'https://whseol0203.github.io'
                         ]
 CORS_ALLOW_CREDENTIALS = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'recippesg@gmail.com'
+EMAIL_HOST_PASSWORD = 'wogvuk-9Dexvy-tartar'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_MAIL = EMAIL_HOST_USER
