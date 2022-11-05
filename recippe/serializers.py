@@ -3,6 +3,10 @@ from re import search
 from rest_framework import serializers
 from .models import Ingredients, Units, User,  PhotoPost, RecipePost, Mail, LikeInfo, Comment, Refrigerator, Recipe_Ingredients, Report
 
+'''
+2211045 유저 serializer 추가
+'''
+
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
