@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from .views import LoginAPI
+from .views import *
 
 '''
 221105 로그인 과정 위해 login/ 링크 추가
@@ -8,4 +8,5 @@ from .views import LoginAPI
 
 urlpatterns = [
     path("login/", LoginAPI.as_view()),
+    path("emailcheck/", EmailAPI.as_view()),
 ]

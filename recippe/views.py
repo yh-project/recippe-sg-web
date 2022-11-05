@@ -7,7 +7,7 @@ from rest_framework.generics import get_object_or_404
 
 from .models import User
 
-from .serializers import UserInfoSerializer
+from .serializers import *
 
 from .authentication import *
 
@@ -15,6 +15,7 @@ from .authentication import *
 
 '''
 221105 로그인 view 추가
+221105 이메일 view 추가
 '''
 
 class LoginAPI(APIView):
@@ -32,5 +33,20 @@ class LoginAPI(APIView):
         else:
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-class SignUpAPI(APIView):
-    pass
+class EmailAPI(APIView):
+    def post(self, request):
+        print(request.data['email'])
+
+        #serializer = EmailVerificationSerializer(data=request.data)
+
+        emailVerification = ControlEmailVerification_b()
+        uploadRes = emailVerification.startCheck(request)
+
+        if uploadRes == "이메일 등록 성공":
+            sendRes = emailVerification.sendCode(request.data['email'], request.data['code'])
+            if sendRes == "이메일 전송 성공":
+                return Response("이메일 전송 완료", status=status.HTTP_200_OK)
+            elif sendRes == "이메일 전송 실패":
+                return Response("이메일 전송 실패", status=status.HTTP_400_BAD_REQUEST)
+        elif uploadRes == "이메일 등록 실패":
+            return Response("에러", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
