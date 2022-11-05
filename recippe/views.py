@@ -17,7 +17,7 @@ from .authentication import *
 221105 로그인 view 추가
 '''
 
-class AuthAPI(APIView):
+class LoginAPI(APIView):
     def get(self, request):
         print(request.data['uid'])
 
@@ -31,3 +31,6 @@ class AuthAPI(APIView):
             return Response(serializer.error, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response(serializer.data, status=status.HTTP_200_OK)
+
+class SignUpAPI(APIView):
+    pass

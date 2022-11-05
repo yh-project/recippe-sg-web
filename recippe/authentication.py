@@ -24,3 +24,7 @@ class ControlLogin_b():
             return serializer
         elif result == 0:
             return "error"
+
+class ControlEmailVerification_b():
+    def startCheck(email):
+        pass
