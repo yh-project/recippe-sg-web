@@ -5,12 +5,11 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 
-#from django.views.decorators.csrf import csrf_exempt
-#from django.utils.decorators import method_decorator
-
 from .models import User
 
 from .serializers import UserInfoSerializer
+
+from .authentication import *
 
 # Create your views here.
 
@@ -32,24 +31,3 @@ class AuthAPI(APIView):
             return Response(serializer.error, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response(serializer.data, status=status.HTTP_200_OK)
-
-class ControlLogin_b():
-
-    def checkLogin(self, id, pw):
-        dbCheck = get_object_or_404(User, uid=id)
-        print("hello", dbCheck.nickname)
-
-        if dbCheck.password == pw:
-            print("Login Success")
-            serializer = self.sendResult(1, dbCheck)
-            return serializer
-        else:
-            print("Login Fail")
-            self.sendResult(0, self.serializer)
-
-    def sendResult(self, result, userInfo=None):
-        if result == 1:
-            serializer = UserInfoSerializer(userInfo)
-            return serializer
-        elif result == 0:
-            return "error"
