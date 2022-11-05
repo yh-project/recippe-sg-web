@@ -7,5 +7,5 @@ from .views import AuthAPI
 '''
 
 urlpatterns = [
-    path("login/", AuthAPI),
+    path("login/", AuthAPI.as_view()),
 ]

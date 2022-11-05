@@ -6,4 +6,4 @@ from .models import Ingredients, Units, User,  PhotoPost, RecipePost, Mail, Like
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('nickname', 'uid', 'password', 'email', 'autoLogin')
+        fields = ('nickname', 'uid', 'password', 'email', 'auto_login')
