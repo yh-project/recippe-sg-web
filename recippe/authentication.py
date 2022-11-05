@@ -14,7 +14,9 @@ from email.mime.text import MIMEText
 '''
 221105 로그인 class 추가
 221105 이메일인증 class 추가
+221105 로그아웃 class 추가
 '''
+
 
 class ControlLogin_b():
 
@@ -36,6 +38,31 @@ class ControlLogin_b():
             return serializer
         elif result == 0:
             return "error"
+
+
+class ControlLogout_b():
+    def cancelAutoLogin(self, nickname):
+        # 앞의 nickname은 db의 nickname 뒤의 nickname은 매개변수 
+        dbCheck = get_object_or_404(User, nickname = nickname)
+        print(f"ControlLogout_b's dbCheck success")
+        dbCheck.auto_login = 0
+        dbCheck.save()
+
+        dbCheck = get_object_or_404(User, nickname = nickname)
+        print(f"ControlLogout_b's second dbCheck success")
+        if dbCheck.auto_login == 0:
+            return self.sendResult(True)
+        else:
+            return self.sendResult(False)
+        
+    def sendResult(self, result):
+        if result == True:
+            print("자동 로그인이 성공적으로 해제되었습니다.")
+            return "자동 로그인이 성공적으로 해제되었습니다."
+        else:
+            print("자동 로그인 해제에 실패했습니다.")
+            return "자동 로그인 해제에 실패했습니다."
+
 
 class ControlEmailVerification_b():
     def startCheck(self, request):
