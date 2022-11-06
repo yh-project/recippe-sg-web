@@ -58,49 +58,47 @@ def send_message(service, user_id, message):
 '''
 
 class ControlLogin_b():
-
     def checkLogin(self, id, pw):
         dbCheck = get_object_or_404(User, uid=id)
 
         if dbCheck.password == pw:
-            print("Login Success")
-            serializer = self.sendResult(1, dbCheck)
-            return serializer
+            code, serializer = self.sendResult("로그인 성공", dbCheck)
         else:
-            print("Login Fail")
-            self.sendResult(0, self.serializer)
+            code, serializer = self.sendResult("로그인 실패", self.serializer)
+
+        return code, serializer
 
     def sendResult(self, result, userInfo=None):
-        if result == 1:
+        if result == "로그인 성공":
+            print(result)
             serializer = UserInfoSerializer(userInfo)
-            return serializer
-        elif result == 0:
-            return "error"
-
+            return 1, serializer
+        elif result == "로그인 실패":
+            print(result)
+            return 0, None
 
 class ControlLogout_b():
     def cancelAutoLogin(self, nickname):
         # 앞의 nickname은 db의 nickname 뒤의 nickname은 매개변수 
         dbCheck = get_object_or_404(User, nickname = nickname)
-        print(f"ControlLogout_b's dbCheck success")
+        print("첫번째 디비 체크")
         dbCheck.auto_login = 0
         dbCheck.save()
 
         dbCheck = get_object_or_404(User, nickname = nickname)
-        print(f"ControlLogout_b's second dbCheck success")
+        print("두번쨰 디비 체크")
         if dbCheck.auto_login == 0:
-            return self.sendResult(True)
+            return self.sendResult("자동로그인 해제 성공")
         else:
-            return self.sendResult(False)
+            return self.sendResult("자동로그인 해제 실패")
         
     def sendResult(self, result):
-        if result == True:
-            print("자동 로그인이 성공적으로 해제되었습니다.")
-            return "자동 로그인이 성공적으로 해제되었습니다."
-        else:
-            print("자동 로그인 해제에 실패했습니다.")
-            return "자동 로그인 해제에 실패했습니다."
-
+        if result == "자동로그인 해제 성공":
+            print(result)
+            return 1
+        elif result == "자동로그인 해제 실패":
+            print(result)
+            return 0
 
 class ControlEmailVerification_b():
     def startCheck(self, request):
@@ -120,8 +118,8 @@ class ControlEmailVerification_b():
         message = create_message("레쉽피", email, "테스트", str(code))
         result =  send_message(service, "recippesg@gmail.com", message)
         if result is not None:
-            result = self.sendResult(1)
-        else: result = self.sendResult(0)
+            result = self.sendResult("이메일 전송 성공")
+        else: result = self.sendResult("이메일 전송 실패")
         return result
 
     def finishCheck(self, request):
@@ -129,31 +127,31 @@ class ControlEmailVerification_b():
             self.codeCheck = TempEmail.objects.get(email = request.data['email'])
 
             if self.codeCheck.code == request.data['code']:
-                result = self.sendResult(4)
+                result = self.sendResult("이메일 인증 최종 완료")
                 return result
             else:
-                result = self.sendResult(3)
+                result = self.sendResult("잘못된 코드")
                 return result
         except:
-            result = self.sendResult(2)
+            result = self.sendResult("존재하지 않는 이메일 입력")
             return result
             
     def sendResult(self, result):
-        if result == 1:
-            print("이메일 전송 성공")
-            return "이메일 전송 성공"
-        elif result == 0:
-            print("이메일 전송 실패")
-            return "이메일 전송 실패"
-        elif result == 2:
-            print("존재하지 않는 이메일 입력")
-            return "존재하지 않는 이메일 입력"
-        elif result == 3:
-            print("잘못된 코드")
-            return "잘못된 코드"
-        elif result == 4:
-            print("이메일 인증 최종 완료")
-            return "이메일 인증 최종 완료"
+        if result == "이메일 전송 실패":
+            print(result)
+            return 0
+        elif result == "이메일 전송 성공":
+            print(result)
+            return 1
+        elif result == "존재하지 않는 이메일 입력":
+            print(result)
+            return 2
+        elif result == "잘못된 코드":
+            print(result)
+            return 3
+        elif result == "이메일 인증 최종 완료":
+            print(result)
+            return 4
 
 class ControlSignUp_b():
     def checkOverlap(self, id, nickname):
@@ -173,10 +171,14 @@ class ControlSignUp_b():
 
     def sendResult(self, result):
         if result == "중복된 아이디":
+            print(result)
             return 0
         elif result == "중복된 닉네임":
+            print(result)
             return 1
         elif result == "아이디, 닉네임 모두 중복":
+            print(result)
             return 2
         elif result == "중복되지 않은 아이디, 닉네임":
+            print(result)
             return 3

@@ -29,14 +29,16 @@ class LoginAPI(APIView):
         inputPw = request.data['password']
 
         controlLogin = ControlLogin_b()
-        serializer = controlLogin.checkLogin(inputId, inputPw)
+        code, serializer = controlLogin.checkLogin(inputId, inputPw)
 
-        if serializer == "error":
-            return Response(serializer.error, status=status.HTTP_404_NOT_FOUND)
-        else:
+        if code == 0:
+            return Response(serializer, status=status.HTTP_404_NOT_FOUND)
+        elif code == 1:
             return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(2, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-class CancelAutoLoginAPI(APIView):
+class LogoutAPI(APIView):
     def post(self, request):
         print(f"CancleAutoLogin Class start")
 
@@ -45,12 +47,12 @@ class CancelAutoLoginAPI(APIView):
         controlLogout = ControlLogout_b()
         result = controlLogout.cancelAutoLogin(inputNickname)
 
-        if result == "자동 로그인이 성공적으로 해제되었습니다.":
+        if result == 1:
             return Response(result, status=status.HTTP_200_OK)
-        elif result == "자동 로그인 해제에 실패했습니다.":
+        elif result == 0:
             return Response(result,status=status.HTTP_405_METHOD_NOT_ALLOWED)
         else:
-            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response(2, status=status.HTTP_406_NOT_ACCEPTABLE)
             
 class EmailAPI(APIView):
     def post(self, request):
@@ -61,12 +63,14 @@ class EmailAPI(APIView):
 
         if uploadRes == "이메일 등록 성공":
             sendRes = emailVerification.sendCode(request.data['email'], request.data['code'])
-            if sendRes == "이메일 전송 성공":
-                return Response("이메일 전송 완료", status=status.HTTP_200_OK)
-            elif sendRes == "이메일 전송 실패":
-                return Response("이메일 전송 실패", status=status.HTTP_400_BAD_REQUEST)
+            if sendRes == 1:
+                return Response(sendRes, status=status.HTTP_200_OK)
+            elif sendRes == 0:
+                return Response(sendRes, status=status.HTTP_400_BAD_REQUEST)
         elif uploadRes == "이메일 등록 실패":
-            return Response("에러", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(5, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response(6, status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def get(self, request):
         print(f"email = {request.data['email']}, code = {request.data['code']}")
@@ -74,12 +78,14 @@ class EmailAPI(APIView):
         emailVerification = ControlEmailVerification_b()
         checkRes = emailVerification.finishCheck(request)
 
-        if checkRes == "존재하지 않는 이메일 입력":
-            return Response("존재하지 않는 이메일 입력", status=status.HTTP_400_BAD_REQUEST)
-        elif checkRes == "잘못된 코드":
-            return Response("잘못된 코드", status=status.HTTP_400_BAD_REQUEST)
-        elif checkRes == "이메일 인증 최종 완료":
-            return Response("이메일 인증 최종 완료", status=status.HTTP_200_OK)
+        if checkRes == 2:
+            return Response(checkRes, status=status.HTTP_400_BAD_REQUEST)
+        elif checkRes == 3:
+            return Response(checkRes, status=status.HTTP_400_BAD_REQUEST)
+        elif checkRes == 4:
+            return Response(checkRes, status=status.HTTP_200_OK)
+        else:
+            return Response(6, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 class SignUpAPI(APIView):
     def post(self, request):
@@ -102,4 +108,6 @@ class SignUpAPI(APIView):
                 return Response(4, status=status.HTTP_200_OK)
             else:
                 return Response(3, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response(5, status=status.HTTP_406_NOT_ACCEPTABLE)
 

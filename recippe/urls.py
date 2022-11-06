@@ -11,7 +11,7 @@ from .views import *
 
 urlpatterns = [
     path("login/", LoginAPI.as_view()),
-    path("cancelAutoLogin/", CancelAutoLoginAPI.as_view()),
+    path("logout/", LogoutAPI.as_view()),
     path("emailcheck/", EmailAPI.as_view()),
     path("signup/", SignUpAPI.as_view()),
 ]
