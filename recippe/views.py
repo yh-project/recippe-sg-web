@@ -17,6 +17,8 @@ from .authentication import *
 221105 로그인 view 추가
 221105 이메일 view 추가
 221105 자동로그인 해제 view 추가
+221106 이메일 인증 get 함수 추가
+221106 최종 회원가입 view 추가
 '''
 
 class LoginAPI(APIView):
@@ -34,8 +36,6 @@ class LoginAPI(APIView):
         else:
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-
 class CancelAutoLoginAPI(APIView):
     def post(self, request):
         print(f"CancleAutoLogin Class start")
@@ -52,12 +52,9 @@ class CancelAutoLoginAPI(APIView):
         else:
             return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
             
-
 class EmailAPI(APIView):
     def post(self, request):
         print(request.data['email'])
-
-        #serializer = EmailVerificationSerializer(data=request.data)
 
         emailVerification = ControlEmailVerification_b()
         uploadRes = emailVerification.startCheck(request)
@@ -70,3 +67,39 @@ class EmailAPI(APIView):
                 return Response("이메일 전송 실패", status=status.HTTP_400_BAD_REQUEST)
         elif uploadRes == "이메일 등록 실패":
             return Response("에러", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def get(self, request):
+        print(f"email = {request.data['email']}, code = {request.data['code']}")
+
+        emailVerification = ControlEmailVerification_b()
+        checkRes = emailVerification.finishCheck(request)
+
+        if checkRes == "존재하지 않는 이메일 입력":
+            return Response("존재하지 않는 이메일 입력", status=status.HTTP_400_BAD_REQUEST)
+        elif checkRes == "잘못된 코드":
+            return Response("잘못된 코드", status=status.HTTP_400_BAD_REQUEST)
+        elif checkRes == "이메일 인증 최종 완료":
+            return Response("이메일 인증 최종 완료", status=status.HTTP_200_OK)
+
+class SignUpAPI(APIView):
+    def post(self, request):
+        print(request.data)
+
+        signUp = ControlSignUp_b()
+        overlapRes = signUp.checkOverlap(request.data['uid'], request.data['nickname'])
+
+        if overlapRes == 0:
+            return Response(0, status=status.HTTP_400_BAD_REQUEST)
+        elif overlapRes == 1:
+            return Response(1, status=status.HTTP_400_BAD_REQUEST)
+        elif overlapRes == 2:
+            return Response(2, status=status.HTTP_400_BAD_REQUEST)
+        elif overlapRes == 3:
+            serializer = UserInfoSerializer(data=request.data)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(4, status=status.HTTP_200_OK)
+            else:
+                return Response(3, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

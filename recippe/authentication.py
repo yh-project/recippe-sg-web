@@ -1,8 +1,9 @@
 from rest_framework.generics import get_object_or_404
 
 from django.core.mail import EmailMessage
+from django.db.models import Q
 
-from .models import User
+from .models import *
 
 from .serializers import *
 
@@ -52,13 +53,14 @@ def send_message(service, user_id, message):
 221105 로그인 class 추가
 221105 이메일인증 class 추가
 221105 로그아웃 class 추가
+221106 이메일인증 finishCheck 추가, 이메일전송코드 추가
+221106 최종 회원가입 class 추가
 '''
 
 class ControlLogin_b():
 
     def checkLogin(self, id, pw):
         dbCheck = get_object_or_404(User, uid=id)
-        print("hello", dbCheck.nickname)
 
         if dbCheck.password == pw:
             print("Login Success")
@@ -118,10 +120,24 @@ class ControlEmailVerification_b():
         message = create_message("레쉽피", email, "테스트", str(code))
         result =  send_message(service, "recippesg@gmail.com", message)
         if result is not None:
-            result = "이메일 전송 성공"
-        else: result = "이메일 전송 실패"
+            result = self.sendResult(1)
+        else: result = self.sendResult(0)
         return result
 
+    def finishCheck(self, request):
+        try:
+            self.codeCheck = TempEmail.objects.get(email = request.data['email'])
+
+            if self.codeCheck.code == request.data['code']:
+                result = self.sendResult(4)
+                return result
+            else:
+                result = self.sendResult(3)
+                return result
+        except:
+            result = self.sendResult(2)
+            return result
+            
     def sendResult(self, result):
         if result == 1:
             print("이메일 전송 성공")
@@ -129,3 +145,38 @@ class ControlEmailVerification_b():
         elif result == 0:
             print("이메일 전송 실패")
             return "이메일 전송 실패"
+        elif result == 2:
+            print("존재하지 않는 이메일 입력")
+            return "존재하지 않는 이메일 입력"
+        elif result == 3:
+            print("잘못된 코드")
+            return "잘못된 코드"
+        elif result == 4:
+            print("이메일 인증 최종 완료")
+            return "이메일 인증 최종 완료"
+
+class ControlSignUp_b():
+    def checkOverlap(self, id, nickname):
+        idCheck = User.objects.filter(uid=id)
+        nickCheck = User.objects.filter(nickname=nickname)
+
+        if len(idCheck) > 0 and len(nickCheck) == 0:
+            result = self.sendResult("중복된 아이디")
+        elif len(idCheck) == 0 and len(nickCheck) > 0:
+            result = self.sendResult("중복된 닉네임")
+        elif len(idCheck) > 0 and len(nickCheck) > 0:
+            result = self.sendResult("아이디, 닉네임 모두 중복")
+        elif len(idCheck) == 0 and len(nickCheck) == 0:
+            result = self.sendResult("중복되지 않은 아이디, 닉네임")
+
+        return result
+
+    def sendResult(self, result):
+        if result == "중복된 아이디":
+            return 0
+        elif result == "중복된 닉네임":
+            return 1
+        elif result == "아이디, 닉네임 모두 중복":
+            return 2
+        elif result == "중복되지 않은 아이디, 닉네임":
+            return 3
