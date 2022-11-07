@@ -1,0 +1,1 @@
+web: gunicorn RecippeAPI.wsgi --log-file -
