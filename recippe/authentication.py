@@ -128,6 +128,7 @@ class ControlEmailVerification_b():
 
             if self.codeCheck.code == request.data['code']:
                 result = self.sendResult("이메일 인증 최종 완료")
+                self.codeCheck.delete()
                 return result
             else:
                 result = self.sendResult("잘못된 코드")
@@ -182,3 +183,10 @@ class ControlSignUp_b():
         elif result == "중복되지 않은 아이디, 닉네임":
             print(result)
             return 3
+
+class ControlEdittingInfo_b():
+    def changePassword(self, nickname, pw):
+        pass
+
+    def sendResult(self, reuslt):
+        pass
