@@ -67,7 +67,8 @@ export default {
             console.log("삭제 성공");
           }
         }) 
-    }
+    },
+    
   }
 }
 </script>

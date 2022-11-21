@@ -14,7 +14,7 @@ export default {
     editRecipe() {
       const recipe = JSON.stringify (
         {
-	        "post_id": 53,
+	        "post_id": 52,
 	        "nickname": "test",
 	        "title": "heroku_test2",
 	        "category": "heroku_test2",
