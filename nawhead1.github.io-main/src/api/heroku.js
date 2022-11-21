@@ -26,5 +26,14 @@ export default {
   },
   recipeLookup: function(post_id) {
     return axios.get(BASE_URL+'recipe/'+post_id+'/');
+  },
+  recipeAdd: function(info) {
+    return axios.post(BASE_URL+'uploadrecipe/', info);
+  },
+  recipeEdit: function(info) {
+    return axios.post(BASE_URL+'updaterecipe/', info);
+  },
+  recipeDelete: function(info) {
+    return axios.post(BASE_URL+'deleterecipe/', info);
   }
 }

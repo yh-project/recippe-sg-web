@@ -45,7 +45,7 @@ export default {
     this.recipes = list;
   },
   methods: {
-
+    
   }
 }
 </script>
